@@ -1,0 +1,51 @@
+C# adımlar 
+
+iLK HAFTA
+kullanıcı giriş ekranı tasarlandı 
+----
+main ekran tasarlandı 
+----
+database kuruldu , giriş ekranının bağlantısı yapıldı(//SqlConnection conn = new SqlConnection("Data Source " =database_path;Initial Catalog=database_name; Integrated Security=True ");)
+giriş işlemleri yapıldı 
+----
+yönetmenler (director) tablosu oluşturuldu
+yönetmen kayıt ekranı tasarlandı (bunun backendini yazıyoruz altta aslında)
+foto yükleme ekranı kodları yazıldı
+yaş cinsiyet kodları yazıldı 
+yönetmen kayıt ekranı tamamlandı
+-----
+yönetmen listesi ekranına  başlandı (item ekleyerek onu veritabanına bağladık veritabında olan kişi sayısına göre tasarım oluşturuyor 
+----
+ private void FormDirectorList_Load (Object sender, EventArgs e)
+	{
+		ListPanel.Controls.Clear();
+		conn.Open();
+		string query = "select * from Table_Directors "; bu veritabanı bağlantısı
+		SqlCommand command = new SqlCommand(query,conn);
+		SqlDataReader read = command.ExecuteReader();
+		while(read.Read())
+		{
+			//fanctions
+
+			DirectorList tool = new DirectorList();	bu oluşturulan item
+			tool.lblName.Text = read["UNAMESNAME"].ToString(); burası da veriyabındaki veriye göre veri çekiyor
+			ListPanel.Controls.Add(tool);
+
+
+		}
+
+---------
+
+yönetmen listesi arama eklendi (buraya güncelle butonu da eklenebilir)
+
+aktör tablosu yapıldı
+aktör listesi eklendi registeri eklendi
+
+sinema tablosu olusturuldu
+sinema register olusturuldu
+sinema list olusturuldu
+
+film register tasarımına başlandı 17/10
+
+
+

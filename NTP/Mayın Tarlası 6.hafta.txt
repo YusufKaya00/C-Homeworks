@@ -1,0 +1,118 @@
+Mayın Tarlası 6.hafta
+
+using System;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        const int boyut = 20; // 20x20 boyutunda bir alan
+        const int mayinSayisi = 50; // Oyunda toplam 50 mayın
+        char[,] oyunTahtasi = new char[boyut, boyut];
+        bool[,] mayinlar = new bool[boyut, boyut];
+
+        // Oyun tahtasını ve mayınları oluştur
+        TahtaOlustur(oyunTahtasi);
+        MayinlariYerlestir(mayinlar, mayinSayisi, boyut);
+
+        // Oyun döngüsü
+        bool oyunDevam = true;
+        while (oyunDevam)
+        {
+            EkraniYazdir(oyunTahtasi, boyut);
+            Console.WriteLine("Bir hücre seçin (örnek: 5,3): ");
+            string[] girdi = Console.ReadLine()?.Split(',');
+
+            if (girdi != null && girdi.Length == 2 &&
+                int.TryParse(girdi[0], out int x) && int.TryParse(girdi[1], out int y))
+            {
+                if (x < 0 || x >= boyut || y < 0 || y >= boyut)
+                {
+                    Console.WriteLine("Geçersiz giriş! Lütfen 0 ile 19 arasında bir koordinat girin.");
+                    continue;
+                }
+
+                if (mayinlar[x, y])
+                {
+                    oyunTahtasi[x, y] = 'X'; // Mayına bastı!
+                    EkraniYazdir(oyunTahtasi, boyut);
+                    Console.WriteLine("Mayına bastınız! Oyun bitti.");
+                    oyunDevam = false;
+                }
+                else
+                {
+                    int yakinMayinSayisi = MayinSayisiHesapla(mayinlar, x, y, boyut);
+                    oyunTahtasi[x, y] = yakinMayinSayisi > 0 ? yakinMayinSayisi.ToString()[0] : ' ';
+                }
+            }
+            else
+            {
+                Console.WriteLine("Geçersiz giriş! Lütfen doğru formatta giriş yapın (örnek: 5,3).");
+            }
+        }
+    }
+
+    static void TahtaOlustur(char[,] tahta)
+    {
+        for (int i = 0; i < tahta.GetLength(0); i++)
+        {
+            for (int j = 0; j < tahta.GetLength(1); j++)
+            {
+                tahta[i, j] = '-'; // Başlangıçta tüm hücreler kapalı
+            }
+        }
+    }
+
+    static void MayinlariYerlestir(bool[,] mayinlar, int mayinSayisi, int boyut)
+    {
+        Random rnd = new Random();
+        int yerlestirilenMayinlar = 0;
+
+        while (yerlestirilenMayinlar < mayinSayisi)
+        {
+            int x = rnd.Next(0, boyut);
+            int y = rnd.Next(0, boyut);
+
+            if (!mayinlar[x, y])
+            {
+                mayinlar[x, y] = true;
+                yerlestirilenMayinlar++;
+            }
+        }
+    }
+
+    static void EkraniYazdir(char[,] tahta, int boyut)
+    {
+        Console.Clear();
+        Console.WriteLine("   " + string.Join(" ", Enumerable.Range(0, boyut))); // Sütun numaraları
+        for (int i = 0; i < boyut; i++)
+        {
+            Console.Write($"{i,2} "); // Satır numaraları
+            for (int j = 0; j < boyut; j++)
+            {
+                Console.Write(tahta[i, j] + " ");
+            }
+            Console.WriteLine();
+        }
+    }
+
+    static int MayinSayisiHesapla(bool[,] mayinlar, int x, int y, int boyut)
+    {
+        int[] dx = { -1, -1, -1, 0, 0, 1, 1, 1 };
+        int[] dy = { -1, 0, 1, -1, 1, -1, 0, 1 };
+        int toplam = 0;
+
+        for (int i = 0; i < 8; i++)
+        {
+            int yeniX = x + dx[i];
+            int yeniY = y + dy[i];
+
+            if (yeniX >= 0 && yeniX < boyut && yeniY >= 0 && yeniY < boyut && mayinlar[yeniX, yeniY])
+            {
+                toplam++;
+            }
+        }
+
+        return toplam;
+    }
+}
