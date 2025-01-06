@@ -1,0 +1,442 @@
+1. Person-Address-Student-Professor Diyagramı
+
+// Address Class
+public class Address
+{
+    public string Street { get; set; }
+    public string City { get; set; }
+    public string State { get; set; }
+    public int PostalCode { get; set; }
+    public string Country { get; set; }
+
+    public bool Validate()
+    {
+        // Adresin doğruluğunu kontrol etme
+        return !string.IsNullOrWhiteSpace(Street) && PostalCode > 0;
+    }
+
+    public string OutputAsLabel()
+    {
+        // Adres bilgilerini etiket şeklinde döndürme
+        return $"{Street}, {City}, {State}, {Country} - {PostalCode}";
+    }
+}
+
+// Person Class
+public class Person
+{
+    public string Name { get; set; }
+    public string PhoneNumber { get; set; }
+    public string EmailAddress { get; set; }
+    public Address LivesAt { get; set; } // Association
+
+    public void PurchaseParkingPass()
+    {
+        // Park kartı satın alma işlemi
+        Console.WriteLine($"{Name} has purchased a parking pass.");
+    }
+}
+
+// Student Class
+public class Student : Person
+{
+    public int StudentNumber { get; set; }
+    public int AverageMark { get; set; }
+
+    public bool IsEligibleToEnroll(string course)
+    {
+        // Kaydolma uygunluğunu kontrol etme
+        return AverageMark > 50; // Örnek bir kriter
+    }
+
+    public int GetSeminarsTaken()
+    {
+        // Alınan seminer sayısını döndürme (dummy data)
+        return 5; // Örnek veri
+    }
+}
+
+// Professor Class
+public class Professor : Person
+{
+    public int Salary { get; set; }
+    public int StaffNumber { get; set; }
+    public int YearsOfService { get; set; }
+    public int NumberOfClasses { get; set; }
+
+    public void Supervise(Student student)
+    {
+        // Bir öğrenciyi denetleme işlemi
+        Console.WriteLine($"{Name} is supervising student {student.Name}.");
+    }
+}
+
+// Test the Classes
+class Program
+{
+    static void Main(string[] args)
+    {
+        // Address oluşturma
+        Address address = new Address
+        {
+            Street = "123 Main St",
+            City = "Springfield",
+            State = "IL",
+            PostalCode = 62704,
+            Country = "USA"
+        };
+
+        // Student oluşturma
+        Student student = new Student
+        {
+            Name = "John Doe",
+            PhoneNumber = "123-456-7890",
+            EmailAddress = "john.doe@example.com",
+            LivesAt = address,
+            StudentNumber = 1001,
+            AverageMark = 85
+        };
+
+        // Professor oluşturma
+        Professor professor = new Professor
+        {
+            Name = "Dr. Smith",
+            PhoneNumber = "987-654-3210",
+            EmailAddress = "dr.smith@example.com",
+            LivesAt = address,
+            Salary = 90000,
+            StaffNumber = 2001,
+            YearsOfService = 10,
+            NumberOfClasses = 3
+        };
+
+        // Test işlemleri
+        professor.Supervise(student);
+        Console.WriteLine(student.IsEligibleToEnroll("Math 101")
+            ? $"{student.Name} is eligible to enroll."
+            : $"{student.Name} is not eligible to enroll.");
+
+        Console.WriteLine("Address validation: " + (address.Validate() ? "Valid" : "Invalid"));
+        Console.WriteLine("Address label: " + address.OutputAsLabel());
+    }
+}
+-------------------------------------------------------------------------------------------
+
+
+2. Pet-Owner-Animal-PetInformation Diyagramı
+
+using System;
+using System.Collections.Generic;
+
+// Identifiable Interface
+public interface Identifiable
+{
+    Guid ID { get; }
+}
+
+// Experienced Interface
+public interface Experienced
+{
+    void ShareExperience();
+}
+
+// Address Class
+public class Address
+{
+    public string Street { get; set; }
+    public string City { get; set; }
+    public string Country { get; set; }
+}
+
+// Owner Class
+public class Owner : Identifiable, Experienced
+{
+    public Guid ID { get; private set; }
+    public string Name { get; set; }
+
+    public Owner()
+    {
+        ID = Guid.NewGuid();
+    }
+
+    public void ShareExperience()
+    {
+        Console.WriteLine($"{Name} is sharing their experience as a pet owner.");
+    }
+}
+
+// Animal Class
+public class Animal
+{
+    public string Type { get; set; }
+    public string Breed { get; set; }
+    public bool IsCarnivore { get; set; }
+}
+
+// Vaccine Class
+public class Vaccine
+{
+    public string Name { get; set; }
+    public string Type { get; set; }
+}
+
+// PetInformation Class
+public class PetInformation
+{
+    public List<string> Traits { get; set; }
+    public List<Vaccine> Vaccines { get; set; }
+
+    public PetInformation()
+    {
+        Traits = new List<string>();
+        Vaccines = new List<Vaccine>();
+    }
+}
+
+// Pet Class
+public class Pet : Identifiable
+{
+    public Guid ID { get; private set; }
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public Owner Owner { get; set; }
+    public Animal Type { get; set; }
+    public PetInformation PetInfo { get; set; }
+
+    public Pet()
+    {
+        ID = Guid.NewGuid();
+    }
+
+    public void Feed()
+    {
+        Console.WriteLine($"{Name} is being fed.");
+    }
+
+    public bool IsHerbivore()
+    {
+        return !Type.IsCarnivore;
+    }
+}
+
+// Main Class for Testing
+class Program
+{
+    static void Main(string[] args)
+    {
+        // Owner
+        Owner owner = new Owner { Name = "Alice" };
+
+        // Animal
+        Animal dog = new Animal
+        {
+            Type = "Dog",
+            Breed = "Labrador",
+            IsCarnivore = true
+        };
+
+        // Pet Information
+        PetInformation petInfo = new PetInformation();
+        petInfo.Traits.Add("Friendly");
+        petInfo.Traits.Add("Playful");
+        petInfo.Vaccines.Add(new Vaccine { Name = "Rabies", Type = "Essential" });
+
+        // Pet
+        Pet pet = new Pet
+        {
+            Name = "Buddy",
+            Age = 3,
+            Owner = owner,
+            Type = dog,
+            PetInfo = petInfo
+        };
+
+        // Test Outputs
+        pet.Feed();
+        Console.WriteLine($"Is {pet.Name} a herbivore? " + (pet.IsHerbivore() ? "Yes" : "No"));
+        owner.ShareExperience();
+    }
+}
+--------------------------------------------------------------------------------------------------
+
+3. Transaction-Customer-Reservation-Car Diyagramı
+
+using System;
+using System.Collections.Generic;
+
+// Customer Class
+public class Customer
+{
+    public int ID { get; set; }
+    public string Name { get; set; }
+    public string Contact { get; set; }
+    public string Address { get; set; }
+    public Payment PaymentInfo { get; set; }
+
+    public void Update()
+    {
+        Console.WriteLine("Customer details have been updated.");
+    }
+}
+
+// RentingOwner Class
+public class RentingOwner
+{
+    public int ID { get; set; }
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public string ContactNum { get; set; }
+    public string Password { get; set; }
+
+    public void VerifyAccount()
+    {
+        Console.WriteLine("Account has been verified.");
+    }
+}
+
+// Reservation Class
+public class Reservation
+{
+    public int ID { get; set; }
+    public string Name { get; set; }
+    public string Details { get; set; }
+
+    public void Confirmation()
+    {
+        Console.WriteLine($"Reservation {Name} has been confirmed.");
+    }
+}
+
+// Car Class
+public class Car
+{
+    public int ID { get; set; }
+    public string Details { get; set; }
+    public string OrderType { get; set; }
+
+    public void ProcessDebit()
+    {
+        Console.WriteLine($"Payment processed for car: {Details}");
+    }
+}
+
+// Payment Class
+public class Payment
+{
+    public int ID { get; set; }
+    public int CardNumber { get; set; }
+    public double Amount { get; set; }
+
+    public void Add()
+    {
+        Console.WriteLine("Payment information has been added.");
+    }
+
+    public void Update()
+    {
+        Console.WriteLine("Payment information has been updated.");
+    }
+}
+
+// Rentals Class
+public class Rentals
+{
+    public int ID { get; set; }
+    public string Name { get; set; }
+    public string Price { get; set; }
+
+    public void Add()
+    {
+        Console.WriteLine("Rental has been added.");
+    }
+}
+
+// Transaction Class
+public class Transaction
+{
+    public int ID { get; set; }
+    public string Name { get; set; }
+    public string Date { get; set; }
+    public string Address { get; set; }
+    public List<Reservation> Reservations { get; set; }
+
+    public Transaction()
+    {
+        Reservations = new List<Reservation>();
+    }
+
+    public void Update()
+    {
+        Console.WriteLine("Transaction has been updated.");
+    }
+}
+
+// Test the Classes
+class Program
+{
+    static void Main(string[] args)
+    {
+        // Customer
+        Customer customer = new Customer
+        {
+            ID = 1,
+            Name = "John Doe",
+            Contact = "123-456-7890",
+            Address = "123 Elm St",
+            PaymentInfo = new Payment { ID = 101, CardNumber = 12345678, Amount = 150.00 }
+        };
+
+        // Renting Owner
+        RentingOwner owner = new RentingOwner
+        {
+            ID = 201,
+            Name = "Rental Inc.",
+            Age = 35,
+            ContactNum = "987-654-3210",
+            Password = "owner123"
+        };
+
+        // Reservation
+        Reservation reservation = new Reservation
+        {
+            ID = 301,
+            Name = "Family Trip",
+            Details = "SUV Rental for 3 days"
+        };
+
+        // Car
+        Car car = new Car
+        {
+            ID = 401,
+            Details = "Toyota Highlander",
+            OrderType = "SUV"
+        };
+
+        // Rentals
+        Rentals rental = new Rentals
+        {
+            ID = 501,
+            Name = "Daily SUV Rental",
+            Price = "$50/day"
+        };
+
+        // Transaction
+        Transaction transaction = new Transaction
+        {
+            ID = 601,
+            Name = "SUV Rental Transaction",
+            Date = DateTime.Now.ToString("yyyy-MM-dd"),
+            Address = "456 Maple Ave"
+        };
+        transaction.Reservations.Add(reservation);
+
+        // Test Outputs
+        customer.Update();
+        owner.VerifyAccount();
+        reservation.Confirmation();
+        car.ProcessDebit();
+        rental.Add();
+        transaction.Update();
+        Console.WriteLine($"Transaction {transaction.Name} created on {transaction.Date}.");
+    }
+}
